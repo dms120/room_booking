@@ -1,0 +1,38 @@
+version: "3"
+services:
+  react-app:
+    image: react-app
+    stdin_open: true
+    ports:
+      - "3000:3000"
+    networks:
+      - booking-system
+    environment:
+      REACT_APP_API_ENDPOINT: http://localhost:8083/
+  api-server:
+    image: api-server
+    ports:
+      - "8083:8083"
+    networks:
+      - booking-system
+    depends_on:
+      - mongo
+    environment:
+      MONGO_DB_CONNECTION_STRING: mongodb://mongoadmin:secret@mongo:27017/
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - booking-system
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+networks:
+  booking-system:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local
